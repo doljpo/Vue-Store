@@ -1,10 +1,12 @@
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product App</title>
     <link rel="stylesheet" href="./css/style.css">
 </head>
+
 <body>
     <div id="app">
         <div class="product">
@@ -16,6 +18,27 @@
             <div class="product-info">
                 <h1>{{ product }}</h1>
                 <p v-if="onSale">On Sale!</p>
+
+                <ul>
+                    <li v-for="detail in details">{{ detail }}</li>
+                </ul>
+
+                <div>
+                    <p v-for="variant in variants" :key="variant.variantId"
+                        @mouseover="showProductVariant(variant.variantImage)">
+                        {{ variant.variantColor }}
+                    </p>
+                </div>
+                <div>
+                    <span v-for="size in sizes" style="margin-right: 10px;">{{ size }}</span>
+                </div>
+
+                <button @click="addToCart">Add to Cart</button>
+                <button @click="removeFromCart">Remove from Cart</button>
+                <div class="cart">
+                    <p>Cart ({{ cart }})</p>
+                </div>                
+
             </div>
         </div>
     </div>
@@ -23,4 +46,5 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="main.js"></script>
 </body>
+
 </html>
