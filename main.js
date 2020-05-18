@@ -1,4 +1,27 @@
+Vue.component('product-details', {
+    props: {
+        details: {
+            type: Array,
+            required: true
+        }
+    },
+    template: `       
+        <div>
+            <h2>Details</h2>
+            <ul>
+                <li v-for="detail in details">{{ detail }}</li>
+            </ul>
+        </div>    
+    `
+});
+
 Vue.component('product', {
+    props: {
+        premium: {
+            type: Boolean,
+            required: true
+        }
+    },
     template: `
     <div class="product">
         <div class="product-image">
@@ -8,14 +31,14 @@ Vue.component('product', {
         </div>
         <div class="product-info">
             <h1>{{ title }}</h1>
-            <p :class="{ 'line-through':  !onSale || !inStock }">On Sale!</p>
-            <p v-if="inStock && onSale">In Stock</p>
+            <p :class="{ 'line-through': !inStock }">On Sale!</p>
+            <p v-if="inStock">In Stock</p>
             <p v-else style="text-decoration: line-through;">Out of Stock</p>
 
-            <h2>Details</h2>
-            <ul>
-                <li v-for="detail in details">{{ detail }}</li>
-            </ul>
+            <product-details :details="details"></product-details>
+
+            <p>User is premium? {{ premium }}</p>
+            <p>Shipping: {{ shipping }}</p>
 
             <div class="color-box" v-for="(variant, index) in variants" :key="variant.variantId"
                 @mouseover="showProductVariant(index)" :style="{'background-color': variant.variantColor}">
@@ -24,8 +47,8 @@ Vue.component('product', {
                 <span v-for="size in sizes" style="margin-right: 10px;">{{ size }}</span>
             </div>
 
-            <button @click="addToCart" :disable="!inStock || !onSale"
-                :class="{ disabledButton: !inStock || !onSale }">Add to Cart</button>
+            <button @click="addToCart" :disable="!inStock"
+                :class="{ disabledButton: !inStock }">Add to Cart</button>
             <button @click="removeFromCart" :disable="cartIsEmpty" :class="{ disabledButton: cartIsEmpty }">Remove
                 from Cart</button>
             <div class="cart">
@@ -39,7 +62,6 @@ Vue.component('product', {
         return {
             product: 'Socks',
             brand: 'Vue Mastery',
-            onSale: true,
             details: [
                 "80% cotton",
                 "20% polyester",
@@ -80,12 +102,20 @@ Vue.component('product', {
             return this.variants[this.selectedVariant].variantImageLink;
         },
         inStock() {
-            return this.variants[this.selectedVariant].variantQuantity;
+            return this.variants[this.selectedVariant].variantQuantity > 0;
+        },
+        shipping() {
+            if (this.premium) {
+                return "Free";
+            } else {
+                return "2.99";
+            }
         }
     },
     methods: {
         addToCart() {
-            this.cart++;
+            if (this.inStock)
+                this.cart++;
         },
 
         removeFromCart() {
